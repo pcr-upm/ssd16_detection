@@ -2,6 +2,7 @@
 
 #### Requisites
 - images_framework https://github.com/bobetocalo/images_framework
+- pascal-voc-writer
 
 #### Installation
 This repository must be located inside the following directory:
