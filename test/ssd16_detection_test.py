@@ -14,10 +14,11 @@ import numpy as np
 from pathlib import Path
 from images_framework.src.constants import Modes
 from images_framework.src.composite import Composite
-from images_framework.detection.ssd16_detection.src.ssd16_detection import SSD16Detection
-from images_framework.src.annotations import GenericGroup, GenericImage, FaceObject
+from images_framework.src.categories import Category as Oi
+from images_framework.src.annotations import GenericGroup, GenericImage, FaceObject, GenericCategory
 from images_framework.src.viewer import Viewer
 from images_framework.src.utils import load_geoimage
+from images_framework.detection.ssd16_detection.src.ssd16_detection import SSD16Detection
 
 image_extensions = ('bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff')
 video_extensions = ('mp4', 'avi', 'mkv')
@@ -46,21 +47,22 @@ def process_frame(composite, filename, show_viewer, save_image, viewer, delay, d
     """
     Process frame and show results.
     """
-    ann = GenericGroup()
-    pred = GenericGroup()
-    img_pred = GenericImage(filename)
-    img, _ = load_geoimage(img_pred.filename)
-    img_pred.tile = np.array([0, 0, img.shape[1], img.shape[0]])
-    ann.add_image(copy.deepcopy(img_pred))
-    # Read annotations from a json file
-    ann_filename = os.path.splitext(filename)[0]+'.json'
-    if os.path.exists(ann_filename):
-        for ann_json in json.load(open(ann_filename))['annotations']:
+    # Read annotations
+    ann, pred = GenericGroup(), GenericGroup()
+    img_ann = GenericImage(filename)
+    img, _ = load_geoimage(img_ann.filename)
+    img_ann.tile = np.array([0, 0, img.shape[1], img.shape[0]])
+    pred.add_image(copy.deepcopy(img_ann))
+    ifs = os.path.splitext(filename)[0]+'.json'
+    if os.path.exists(ifs):
+        for line in json.load(open(ifs))['annotations']:
             obj = FaceObject()
-            x, y, w, h = ann_json['bbox']
+            x, y, w, h = line['bbox']
             obj.bb = (x, y, x+w, y+h)
-            img_pred.add_object(obj)
-    pred.add_image(img_pred)
+            obj.add_category(GenericCategory(label=Oi.FACE))
+            img_ann.add_object(obj)
+    ann.add_image(img_ann)
+    # Process frame and show results
     ticks = cv2.getTickCount()
     composite.process(ann, pred)
     ticks = cv2.getTickCount() - ticks

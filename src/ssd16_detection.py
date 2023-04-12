@@ -39,10 +39,10 @@ class SSD16Detection(Detection):
             caffe.set_mode_gpu()
         # Create Caffe neural network
         print('Running solver ...')
-        solver_file = self.path + 'data/ResNet_152_solver.prototxt'
+        solver_file = self.path + 'data/solver.prototxt'
         solver = caffe.get_solver(solver_file)
         # Train from scratch vs Finetune from a previous net
-        model_file = self.path + 'data/ResNet_152.caffemodel'
+        model_file = self.path + 'data/res10_300x300_ssd.caffemodel'
         if os.path.exists(model_file):
             solver.net.copy_from(model_file)
         solver.solve()
