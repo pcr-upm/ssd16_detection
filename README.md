@@ -33,5 +33,5 @@ usage: SSD16Detection [--gpu GPU]
 
 * Use the --gpu option to set the GPU identifier (negative value indicates CPU mode).
 ```
-> python images_framework/detection/ssd16_detection/test/ssd16_detection_test.py --input-data images_framework/detection/ssd16_detection/test/example.tif --database AFLW --gpu 0 --save-image
+> python images_framework/detection/ssd16_detection/test/ssd16_detection_test.py --input-data images_framework/detection/ssd16_detection/test/example.tif --database aflw --gpu 0 --save-image
 ```
