@@ -68,6 +68,6 @@ class SSD16Detection(Detection):
                 if detection[2] < 0.5:
                     continue
                 obj = FaceObject()
-                obj.bb = detection[3:7] * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]]
+                obj.bb = tuple(detection[3:7] * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]])
                 obj.add_category(GenericCategory(label=Oi.FACE, score=detection[2]))
                 img_pred.add_object(obj)
