@@ -1,7 +1,7 @@
 # Detection using SSD (2016)
 
 #### Requisites
-- images_framework https://github.com/bobetocalo/images_framework
+- images_framework https://github.com/pcr-upm/images_framework
 - pascal-voc-writer
 
 #### Installation
