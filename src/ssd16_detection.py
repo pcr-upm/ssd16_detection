@@ -5,7 +5,7 @@ __email__ = 'roberto.valle@upm.es'
 
 import os
 import cv2
-from images_framework.src.annotations import PersonObject, FaceObject, GenericCategory
+from images_framework.src.annotations import PersonObject, PersonObject, GenericCategory
 from images_framework.src.detection import Detection
 from images_framework.src.categories import Category as Oi
 
@@ -89,7 +89,7 @@ class SSD16Detection(Detection):
             for detection in output[0][0]:
                 if detection[2] < 0.5:
                     continue
-                obj = PersonObject() if self.category == Oi.PERSON else FaceObject()
+                obj = PersonObject()
                 obj.bb = tuple(detection[3:7] * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]])
                 obj.add_category(GenericCategory(label=self.category, score=detection[2]))
                 img_pred.add_object(obj)

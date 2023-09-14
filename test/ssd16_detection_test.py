@@ -15,7 +15,7 @@ from pathlib import Path
 from images_framework.src.constants import Modes
 from images_framework.src.composite import Composite
 from images_framework.src.categories import Category as Oi
-from images_framework.src.annotations import GenericGroup, GenericImage, FaceObject, GenericCategory
+from images_framework.src.annotations import GenericGroup, GenericImage, PersonObject, GenericCategory
 from images_framework.src.viewer import Viewer
 from images_framework.src.utils import load_geoimage
 from images_framework.detection.ssd16_detection.src.ssd16_detection import SSD16Detection
@@ -56,7 +56,7 @@ def process_frame(composite, filename, show_viewer, save_image, viewer, delay, d
     ifs = os.path.splitext(filename)[0]+'.json'
     if os.path.exists(ifs):
         for line in json.load(open(ifs))['annotations']:
-            obj = FaceObject()
+            obj = PersonObject()
             x, y, w, h = line['bbox']
             obj.bb = (x, y, x+w, y+h)
             obj.add_category(GenericCategory(label=Oi.FACE))
