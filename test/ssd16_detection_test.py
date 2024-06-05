@@ -122,7 +122,7 @@ def main():
     composite.parse_options(unknown)
     composite.load(Modes.TEST)
     viewer = Viewer('ssd16_detection_test')
-    dirname = 'output/images/'
+    dirname = 'images_framework/output/images/'
     Path(dirname).mkdir(parents=True, exist_ok=True)
 
     # Process frame and show results
