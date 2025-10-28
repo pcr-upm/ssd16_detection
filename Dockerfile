@@ -26,9 +26,9 @@ LABEL maintainer="roberto.valle@upm.es"
 RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /home/username/miniconda.sh
 RUN chmod +x /home/username/miniconda.sh
 RUN /home/username/miniconda.sh -b -p /home/username/conda
-RUN /home/username/conda/bin/conda create --name ssd16 python=3.8
 RUN /home/username/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
     /home/username/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+RUN /home/username/conda/bin/conda create --name ssd16 python=3.8
 # Activate conda environment
 ENV PATH /home/username/conda/envs/ssd16/bin:/home/username/conda/bin:$PATH
 # Make RUN commands use the new environment (source activate ssd16)
