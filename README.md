@@ -1,15 +1,8 @@
 # Detection using SSD (2016)
 
 #### Requisites
-- images_framework https://github.com/pcr-upm/images_framework
+- images-framework
 
-#### Installation
-This repository must be located inside the following directory:
-```
-images_framework
-    └── detection
-        └── ssd16_detection
-```
 #### Usage
 ```
 usage: ssd16_detection_test.py [-h] [--input-data INPUT_DATA] [--show-viewer] [--save-image]
@@ -33,5 +26,5 @@ usage: SSD16Detection [--gpu GPU]
 
 * Use the --gpu option to set the GPU identifier (negative value indicates CPU mode).
 ```
-> python images_framework/detection/ssd16_detection/test/ssd16_detection_test.py --input-data images_framework/detection/ssd16_detection/test/example.tif --database aflw --gpu 0 --save-image
+> python test/ssd16_detection_test.py --input-data test/example.tif --database aflw --gpu 0 --save-image
 ```

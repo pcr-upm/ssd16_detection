@@ -4,6 +4,8 @@ __author__ = 'Roberto Valle'
 __email__ = 'roberto.valle@upm.es'
 
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))
 import cv2
 from images_framework.src.annotations import PersonObject, PersonObject, GenericCategory
 from images_framework.src.detection import Detection

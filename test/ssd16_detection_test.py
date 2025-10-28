@@ -11,6 +11,7 @@ import json
 import copy
 import argparse
 import numpy as np
+import importlib.util
 from pathlib import Path
 from images_framework.src.constants import Modes
 from images_framework.src.composite import Composite
@@ -18,7 +19,7 @@ from images_framework.src.categories import Category as Oi
 from images_framework.src.annotations import GenericGroup, GenericImage, PersonObject, GenericCategory
 from images_framework.src.viewer import Viewer
 from images_framework.src.utils import load_geoimage
-from images_framework.detection.ssd16_detection.src.ssd16_detection import SSD16Detection
+from src.ssd16_detection import SSD16Detection
 
 image_extensions = ('bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff')
 video_extensions = ('mp4', 'avi', 'mkv')
@@ -117,12 +118,14 @@ def main():
 
     # Load computer vision components
     composite = Composite()
-    sd = SSD16Detection('images_framework/detection/ssd16_detection/')
+    sd = SSD16Detection('')
     composite.add(sd)
     composite.parse_options(unknown)
     composite.load(Modes.TEST)
+    spec = importlib.util.find_spec('images_framework')
+    output_path = os.path.join('images_framework' if spec is None else os.path.dirname(spec.origin), 'output')
     viewer = Viewer('ssd16_detection_test')
-    dirname = 'images_framework/output/images/'
+    dirname = os.path.join(output_path, 'images/')
     Path(dirname).mkdir(parents=True, exist_ok=True)
 
     # Process frame and show results
