@@ -8,6 +8,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))
 import cv2
 from images_framework.src.annotations import PersonObject, PersonObject, GenericCategory
+from images_framework.src.utils import load_geoimage, DepthMode, ChannelsMode
 from images_framework.src.detection import Detection
 from images_framework.src.categories import Category as Oi
 
@@ -83,7 +84,7 @@ class SSD16Detection(Detection):
     def process(self, ann, pred):
         for img_pred in pred.images:
             # Load image
-            image = cv2.imread(img_pred.filename)
+            image, _ = load_geoimage(img_pred.filename, DepthMode.UBYTE, ChannelsMode.THREE)
             input_blob = cv2.dnn.blobFromImage(image, scalefactor=self.std, size=(self.width, self.height), mean=self.mean, swapRB=False, crop=False)
             self.model.setInput(input_blob, 'data')
             output = self.model.forward()
