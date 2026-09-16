@@ -7,10 +7,10 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))
 import cv2
-from images_framework.src.annotations import PersonObject, PersonObject, GenericCategory
-from images_framework.src.utils import load_geoimage, DepthMode, ChannelsMode
-from images_framework.src.detection import Detection
-from images_framework.src.categories import Category as Oi
+from pcr_framework.src.annotations import PersonObject, PersonObject, GenericCategory
+from pcr_framework.src.utils import load_geoimage, DepthMode, ChannelsMode
+from pcr_framework.src.detection import Detection
+from pcr_framework.src.categories import Category as Oi
 
 
 class SSD16Detection(Detection):
@@ -73,7 +73,7 @@ class SSD16Detection(Detection):
         solver.solve()
 
     def load(self, mode):
-        from images_framework.src.constants import Modes
+        from pcr_framework.src.constants import Modes
         # Set up a neural network to train
         print('Load model')
         proto_file = self.path + 'data/' + self.category.name + '/' + 'deploy.prototxt'

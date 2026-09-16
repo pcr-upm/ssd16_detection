@@ -13,12 +13,12 @@ import argparse
 import numpy as np
 import importlib.util
 from pathlib import Path
-from images_framework.src.constants import Modes
-from images_framework.src.composite import Composite
-from images_framework.src.categories import Category as Oi
-from images_framework.src.annotations import GenericVideo, GenericImage, PersonObject, GenericCategory
-from images_framework.src.viewer import Viewer
-from images_framework.src.utils import load_geoimage
+from pcr_framework.src.constants import Modes
+from pcr_framework.src.composite import Composite
+from pcr_framework.src.categories import Category as Oi
+from pcr_framework.src.annotations import GenericVideo, GenericImage, PersonObject, GenericCategory
+from pcr_framework.src.viewer import Viewer
+from pcr_framework.src.utils import load_geoimage
 from src.ssd16_detection import SSD16Detection
 
 image_extensions = ('bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff')

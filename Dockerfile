@@ -30,4 +30,4 @@ ENV PATH /home/username/conda/envs/ssd16/bin:/home/username/conda/bin:$PATH
 # Make RUN commands use the new environment (source activate ssd16)
 SHELL ["conda", "run", "-n", "ssd16", "/bin/bash", "-c"]
 # Install dependencies
-RUN pip install images-framework opencv-python==4.5.3.56 opencv-contrib-python==4.5.3.56
+RUN pip install pcr-framework opencv-python==4.5.3.56 opencv-contrib-python==4.5.3.56

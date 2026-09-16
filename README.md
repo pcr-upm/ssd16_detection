@@ -1,7 +1,7 @@
 # Detection using SSD (2016)
 
 #### Requisites
-- images-framework
+The required dependencies are installed in the [`Dockerfile`](./Dockerfile#L33).
 
 #### Usage
 ```
