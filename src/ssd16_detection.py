@@ -38,22 +38,20 @@ class SSD16Detection(Detection):
         args, unknown = parser.parse_known_args(params)
         print(parser.format_usage())
         self.gpu = args.gpu
-        if self.database in ['coco', 'pascal_voc']:
+        if self.database in ['coco']:
             # The model was created with SSD framework using MobileNet like architecture as a backbone.
             # The model was first trained on the COCO dataset and was then fine-tuned on PASCAL VOC.
             self.filename = 'mobilenet'
             self.category = Oi.PERSON
             self.mean = (127.5, 127.5, 127.5)
             self.std = 0.007843
-        elif self.database in ['300w_public', '300w_private', 'cofw', 'aflw', 'wflw', 'dad', '300wlp']:
+        else:
             # The model was created with SSD framework using ResNet-10 like architecture as a backbone.
             # The model was trained in Caffe framework on some huge and available online dataset.
             self.filename = 'res10_300x300_ssd'
             self.category = Oi.FACE
             self.mean = (104.0, 177.0, 123.0)
             self.std = 1.0
-        else:
-            raise ValueError('Database is not implemented')
 
     def train(self, anns_train, anns_valid):
         import caffe
@@ -64,10 +62,10 @@ class SSD16Detection(Detection):
             caffe.set_mode_gpu()
         # Create Caffe neural network
         print('Running solver ...')
-        solver_file = self.path + 'data/' + self.category.label.name + '/' + 'solver.prototxt'
+        solver_file = self.path + 'data/' + self.category + '/' + 'solver.prototxt'
         solver = caffe.get_solver(solver_file)
         # Train from scratch vs Finetune from a previous net
-        model_file = self.path + 'data/' + self.category.label.name + '/' + self.filename + '.caffemodel'
+        model_file = self.path + 'data/' + self.category + '/' + self.filename + '.caffemodel'
         if os.path.exists(model_file):
             solver.net.copy_from(model_file)
         solver.solve()
@@ -76,8 +74,8 @@ class SSD16Detection(Detection):
         from pcr_framework.src.constants import Modes
         # Set up a neural network to train
         print('Load model')
-        proto_file = self.path + 'data/' + self.category.name + '/' + 'deploy.prototxt'
-        model_file = self.path + 'data/' + self.category.name + '/' + self.filename + '.caffemodel'
+        proto_file = self.path + 'data/' + self.category + '/' + 'deploy.prototxt'
+        model_file = self.path + 'data/' + self.category + '/' + self.filename + '.caffemodel'
         if mode is Modes.TEST:
             self.model = cv2.dnn.readNetFromCaffe(proto_file, model_file)
 
@@ -94,5 +92,5 @@ class SSD16Detection(Detection):
                     continue
                 obj = PersonObject()
                 obj.bb = tuple(detection[3:7] * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]])
-                obj.add_category(GenericCategory(label=self.category, confidence=detection[2]))
+                obj.add_category(GenericCategory(label=self.category, label_confidence=detection[2]))
                 img_pred.add_object(obj)
