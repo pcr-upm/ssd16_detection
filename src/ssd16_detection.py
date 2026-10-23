@@ -94,5 +94,5 @@ class SSD16Detection(Detection):
                     continue
                 obj = PersonObject()
                 obj.bb = tuple(detection[3:7] * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]])
-                obj.add_category(GenericCategory(label=self.category, score=detection[2]))
+                obj.add_category(GenericCategory(label=self.category, confidence=detection[2]))
                 img_pred.add_object(obj)
