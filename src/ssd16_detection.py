@@ -90,10 +90,10 @@ class SSD16Detection(Detection):
             # Save prediction
             for detection in output[0][0]:
                 class_id = int(detection[1])
-                if self.database in ['coco', 'voc'] and class_id == 0:
-                    continue
                 confidence = float(detection[2])
-                obj = PersonObject() if class_id == 15 else GenericObject()
+                if class_id == 0:
+                    continue
+                obj = GenericObject() if self.database in ['coco', 'voc'] and class_id != 15 else PersonObject() 
                 obj.bb = tuple((np.array(detection[3:7], dtype=float) * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]]).tolist())
-                obj.add_category(GenericCategory(label=categories[class_id], label_confidence=confidence))
+                obj.add_category(GenericCategory(label=categories[class_id if self.database in ['coco', 'voc'] else class_id-1], label_confidence=confidence))
                 img_pred.add_object(obj)
