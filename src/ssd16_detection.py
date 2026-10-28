@@ -7,10 +7,10 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))
 import cv2
-from pcr_framework.src.annotations import PersonObject, PersonObject, GenericCategory
+import numpy as np
+from pcr_framework.src.annotations import GenericObject, PersonObject, GenericCategory
 from pcr_framework.src.utils import load_geoimage, DepthMode, ChannelsMode
 from pcr_framework.src.detection import Detection
-from pcr_framework.src.categories import Category as Oi
 
 
 class SSD16Detection(Detection):
@@ -24,8 +24,7 @@ class SSD16Detection(Detection):
         self.gpu = None
         self.width = 300
         self.height = 300
-        self.filename = None
-        self.category = None
+        self.ckpt = None
         self.mean = None
         self.std = None
 
@@ -38,18 +37,16 @@ class SSD16Detection(Detection):
         args, unknown = parser.parse_known_args(params)
         print(parser.format_usage())
         self.gpu = args.gpu
-        if self.database in ['coco']:
+        if self.database in ['coco', 'voc']:
             # The model was created with SSD framework using MobileNet like architecture as a backbone.
             # The model was first trained on the COCO dataset and was then fine-tuned on PASCAL VOC.
-            self.filename = 'mobilenet'
-            self.category = Oi.PERSON
+            self.ckpt = 'mobilenet.caffemodel'
             self.mean = (127.5, 127.5, 127.5)
             self.std = 0.007843
         else:
             # The model was created with SSD framework using ResNet-10 like architecture as a backbone.
             # The model was trained in Caffe framework on some huge and available online dataset.
-            self.filename = 'res10_300x300_ssd'
-            self.category = Oi.FACE
+            self.ckpt = 'res10_300x300_ssd.caffemodel'
             self.mean = (104.0, 177.0, 123.0)
             self.std = 1.0
 
@@ -62,10 +59,10 @@ class SSD16Detection(Detection):
             caffe.set_mode_gpu()
         # Create Caffe neural network
         print('Running solver ...')
-        solver_file = self.path + 'data/' + self.category + '/' + 'solver.prototxt'
+        solver_file = os.path.join(self.path, 'data', self.database, 'solver.prototxt')
         solver = caffe.get_solver(solver_file)
         # Train from scratch vs Finetune from a previous net
-        model_file = self.path + 'data/' + self.category + '/' + self.filename + '.caffemodel'
+        model_file = os.path.join(self.path, 'data', self.database, self.ckpt)
         if os.path.exists(model_file):
             solver.net.copy_from(model_file)
         solver.solve()
@@ -74,12 +71,16 @@ class SSD16Detection(Detection):
         from pcr_framework.src.constants import Modes
         # Set up a neural network to train
         print('Load model')
-        proto_file = self.path + 'data/' + self.category + '/' + 'deploy.prototxt'
-        model_file = self.path + 'data/' + self.category + '/' + self.filename + '.caffemodel'
+        proto_file = os.path.join(self.path, 'data', self.database, 'deploy.prototxt')
+        model_file = os.path.join(self.path, 'data', self.database, self.ckpt)
         if mode is Modes.TEST:
             self.model = cv2.dnn.readNetFromCaffe(proto_file, model_file)
 
     def process(self, ann, pred):
+        from pcr_framework.src.datasets import Database
+        datasets = [subclass().get_names() for subclass in Database.__subclasses__()]
+        idx = [datasets.index(subset) for subset in datasets if self.database in subset]
+        categories = Database.__subclasses__()[idx[0]]().get_categories()
         for img_pred in pred.images:
             # Load image
             image, _ = load_geoimage(img_pred.filename, DepthMode.UBYTE, ChannelsMode.THREE)
@@ -88,9 +89,11 @@ class SSD16Detection(Detection):
             output = self.model.forward()
             # Save prediction
             for detection in output[0][0]:
-                if detection[2] < 0.5:
+                class_id = int(detection[1])
+                if self.database in ['coco', 'voc'] and class_id == 0:
                     continue
-                obj = PersonObject()
-                obj.bb = tuple(detection[3:7] * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]])
-                obj.add_category(GenericCategory(label=self.category, label_confidence=detection[2]))
+                confidence = float(detection[2])
+                obj = PersonObject() if class_id == 15 else GenericObject()
+                obj.bb = tuple((np.array(detection[3:7], dtype=float) * [image.shape[1], image.shape[0], image.shape[1], image.shape[0]]).tolist())
+                obj.add_category(GenericCategory(label=categories[class_id], label_confidence=confidence))
                 img_pred.add_object(obj)
